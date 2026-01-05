@@ -1,176 +1,213 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CCTV SMART VIEW</title>
-  <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { margin: 0; background: #f3f4f6; }
-    .hidden { display: none !important; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CCTV SMART VIEW</title>
 
-    /* Login */
-    .login-page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .login-box {
-      background: white;
-      padding: 32px;
-      width: 300px;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .login-box h1 { text-align: center; margin-bottom: 20px; }
-    .login-box input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-    .login-box button {
-      width: 100%;
-      padding: 10px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+body {
+  margin: 0;
+  background: #f3f4f6;
+}
+.hidden { display: none !important; }
 
-    /* Header */
-    header {
-      background: white;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+/* ===== Login ===== */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-box {
+  background: white;
+  padding: 32px;
+  width: 320px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.1);
+}
+.login-box h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.login-box input,
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+.login-box input {
+  border: 1px solid #ccc;
+}
+.login-box button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
 
-    /* Layout */
-    .container { display: flex; height: calc(100vh - 64px); }
-    aside {
-      width: 260px;
-      background: white;
-      padding: 16px;
-      border-right: 1px solid #ddd;
-      overflow-y: auto;
-    }
-    main {
-      flex: 1;
-      padding: 16px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 16px;
-      overflow-y: auto;
-    }
+/* ===== Header ===== */
+header {
+  background: white;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.menu-btn {
+  display: none;
+  font-size: 22px;
+  cursor: pointer;
+}
 
-    /* Buttons */
-    .floor-btn {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 8px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: #e5e7eb;
-    }
-    .floor-btn.active { background: #2563eb; color: white; }
+/* ===== Layout ===== */
+.container {
+  display: flex;
+  height: calc(100vh - 56px);
+}
+aside {
+  width: 260px;
+  background: white;
+  padding: 12px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+main {
+  flex: 1;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  overflow-y: auto;
+}
 
-    /* Camera list */
-    .camera-item {
-      background: #f9fafb;
-      padding: 8px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      font-size: 14px;
-    }
+/* ===== Sidebar ===== */
+.floor-btn {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #e5e7eb;
+}
+.floor-btn.active {
+  background: #2563eb;
+  color: white;
+}
+.camera-item {
+  background: #f9fafb;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
 
-    /* Camera view */
-    .camera-box {
-      background: black;
-      color: white;
-      border-radius: 16px;
-      height: 220px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .fullscreen-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(0,0,0,0.6);
-      color: white;
-      border: none;
-      padding: 4px 6px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+/* ===== Camera Box ===== */
+.camera-box {
+  background: black;
+  color: white;
+  border-radius: 16px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+  padding: 10px;
+}
 
-    /* Fullscreen */
-    .fullscreen {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      color: white;
-      font-size: 24px;
-    }
-    .close-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 30px;
-      cursor: pointer;
-    }
-  </style>
+/* ===== Fullscreen ===== */
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  color: white;
+  font-size: 24px;
+}
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+  }
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+  aside {
+    width: 100%;
+    display: none;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+  aside.show {
+    display: block;
+  }
+  main {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
 </head>
+
 <body>
 
-<!-- Login Page -->
+<!-- Login -->
 <div id="login" class="login-page">
   <div class="login-box">
     <h1>CCTV SMART VIEW</h1>
-    <input id="username" placeholder="Username" />
-    <input id="password" type="password" placeholder="Password" />
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
   </div>
 </div>
 
 <!-- Dashboard -->
 <div id="dashboard" class="hidden">
-  <header>
-    <h2>CCTV SMART VIEW</h2>
-    <div>
-      👤 <span id="userLabel"></span>
-      <button onclick="logout()" style="margin-left:10px;">Logout</button>
-    </div>
-  </header>
-
-  <div class="container">
-    <aside>
-      <h3>Camera by Floor</h3>
-      <button class="floor-btn active" onclick="selectFloor('all', this)">ทุกชั้น (18 กล้อง)</button>
-      <button class="floor-btn" onclick="selectFloor(1, this)">ชั้น 1</button>
-      <button class="floor-btn" onclick="selectFloor(2, this)">ชั้น 2</button>
-      <button class="floor-btn" onclick="selectFloor(3, this)">ชั้น 3</button>
-      <div id="cameraList"></div>
-    </aside>
-
-    <main id="cameraGrid"></main>
+<header>
+  <span class="menu-btn" onclick="toggleMenu()">☰</span>
+  <h2>CCTV SMART VIEW</h2>
+  <div>
+    👤 <span id="userLabel"></span>
+    <button onclick="logout()">Logout</button>
   </div>
+</header>
+
+<div class="container">
+  <aside id="sidebar">
+    <button class="floor-btn active" onclick="selectFloor('all',this)">ทุกชั้น</button>
+    <button class="floor-btn" onclick="selectFloor(1,this)">ชั้น 1</button>
+    <button class="floor-btn" onclick="selectFloor(2,this)">ชั้น 2</button>
+    <button class="floor-btn" onclick="selectFloor(3,this)">ชั้น 3</button>
+    <div id="cameraList"></div>
+  </aside>
+
+  <main id="cameraGrid"></main>
+</div>
 </div>
 
 <!-- Fullscreen -->
@@ -180,70 +217,75 @@
 </div>
 
 <script>
-  const cameras = Array.from({ length: 18 }, (_, i) => ({
-    id: i + 1,
-    name: `Camera ${i + 1}`,
-    floor: Math.floor(i / 6) + 1,
-    status: i % 3 === 1 ? "offline" : "online",
-  }));
+const cameras = Array.from({ length: 18 }, (_, i) => ({
+  id: i + 1,
+  name: `Camera ${i + 1}`,
+  floor: Math.floor(i / 6) + 1,
+  status: i % 3 === 1 ? "offline" : "online"
+}));
 
-  let selectedFloor = "all";
+let selectedFloor = "all";
 
-  function login() {
-    const user = document.getElementById('username').value;
-    if (!user) return;
-    document.getElementById('userLabel').innerText = user;
-    document.getElementById('login').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    render();
-  }
+function login() {
+  const user = username.value.trim();
+  if (!user) return alert("กรอก Username");
+  userLabel.innerText = user;
+  login.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+  render();
+}
 
-  function logout() {
-    document.getElementById('dashboard').classList.add('hidden');
-    document.getElementById('login').classList.remove('hidden');
-  }
+function logout() {
+  dashboard.classList.add("hidden");
+  login.classList.remove("hidden");
+}
 
-  function selectFloor(floor, btn) {
-    selectedFloor = floor;
-    document.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    render();
-  }
+function toggleMenu() {
+  sidebar.classList.toggle("show");
+}
 
-  function render() {
-    const list = document.getElementById('cameraList');
-    const grid = document.getElementById('cameraGrid');
-    list.innerHTML = '';
-    grid.innerHTML = '';
+function selectFloor(floor, btn) {
+  selectedFloor = floor;
+  document.querySelectorAll(".floor-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  render();
+}
 
-    const filtered = selectedFloor === 'all'
-      ? cameras
-      : cameras.filter(c => c.floor === selectedFloor);
+function render() {
+  cameraList.innerHTML = "";
+  cameraGrid.innerHTML = "";
 
-    filtered.forEach(cam => {
-      const item = document.createElement('div');
-      item.className = 'camera-item';
-      item.innerHTML = `📷 ${cam.name} <span style="color:${cam.status === 'online' ? 'green' : 'red'}">${cam.status}</span>`;
-      list.appendChild(item);
+  const filtered = selectedFloor === "all"
+    ? cameras
+    : cameras.filter(c => c.floor === selectedFloor);
 
-      const box = document.createElement('div');
-      box.className = 'camera-box';
-      box.innerText = cam.status === 'online' ? `Live Stream – ${cam.name}` : `${cam.name} Offline`;
-      box.onclick = () => openFullscreen(cam);
-      grid.appendChild(box);
-    });
-  }
+  filtered.forEach(cam => {
+    const item = document.createElement("div");
+    item.className = "camera-item";
+    item.innerHTML = `${cam.name} <span style="color:${cam.status==='online'?'green':'red'}">${cam.status}</span>`;
+    cameraList.appendChild(item);
 
-  function openFullscreen(cam) {
-    document.getElementById('fullscreenText').innerText = cam.status === 'online'
-      ? `Live Stream – ${cam.name}`
-      : `${cam.name} Offline`;
-    document.getElementById('fullscreen').classList.remove('hidden');
-  }
+    const box = document.createElement("div");
+    box.className = "camera-box";
+    box.innerText = cam.status === "online"
+      ? `Live Stream\n${cam.name}`
+      : `${cam.name}\nOffline`;
+    box.onclick = () => openFullscreen(cam);
+    cameraGrid.appendChild(box);
+  });
+}
 
-  function closeFullscreen() {
-    document.getElementById('fullscreen').classList.add('hidden');
-  }
+function openFullscreen(cam) {
+  fullscreenText.innerText = cam.name;
+  fullscreen.classList.remove("hidden");
+  fullscreen.requestFullscreen?.();
+}
+
+function closeFullscreen() {
+  fullscreen.classList.add("hidden");
+  document.exitFullscreen?.();
+}
 </script>
+
 </body>
 </html>
