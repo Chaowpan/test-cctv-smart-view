@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCTV SMART VIEW - Dashboard</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Prompt', sans-serif;
+    }
+
+    body, html {
+      margin:0;
+      padding:0;
+      background: linear-gradient(135deg,#0d1b2a,#1b263b,#415a77);
+      color:#fff;
+      height:100%;
+    }
+
+    .layout {
+      display:flex;
+      min-height:100vh;
+      overflow:hidden;
+    }
+
+    .sidebar {
+      width:260px;
+      background:rgba(0,0,0,0.45);
+      backdrop-filter:blur(12px);
+      border-right:1px solid rgba(255,255,255,0.08);
+      padding:24px 18px;
+      display:flex;
+      flex-direction:column;
+      transition:0.3s;
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:32px;
+    }
+
+    .brand .logo {
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#00b4ff,#0077ff);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-size:20px;
+      box-shadow:0 8px 20px rgba(0,123,255,0.45);
+    }
+
+    .brand-title { font-weight:bold; font-size:14px; }
+    small{font-size:12px;opacity:.7;}
+
+    .sidebar button {
+      width:100%;
+      border:none;
+      padding:13px;
+      background:rgba(255,255,255,0.06);
+      color:#dbe4ed;
+      border-radius:12px;
+      margin-bottom:10px;
+      text-align:left;
+      cursor:pointer;
+      transition:0.25s;
+      font-size:14px;
+    }
+
+    .sidebar button:hover {
+      background:rgba(76,201,240,0.22);
+    }
+
+    .sidebar button.active {
+      background:rgba(76,201,240,0.32);
+      color:#fff;
+      font-weight:600;
+    }
+
+    .logout {
+      margin-top:auto;
+      background:rgba(255,107,107,0.18)!important;
+      color:#ff6b6b!important;
+    }
+
+    .logout:hover {
+      background:rgba(255,107,107,0.28)!important;
+    }
+
+    .main {
+      flex:1;
+      padding:26px;
+      overflow-y:auto;
+    }
+
+    .topbar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:22px;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    h1 {
+      margin:0;
+      font-size:22px;
+      font-weight:600;
+    }
+
+    .title-group span {
+      font-size:12px;
+      opacity:0.85;
+    }
+
+    .status-boxes {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .status-boxes .box {
+      background:rgba(255,255,255,0.12);
+      padding:6px 12px;
+      border-radius:10px;
+      font-size:13px;
+    }
+
+    .online {color:#2ecc71;}
+    .offline{color:#ff6b6b;}
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+      gap:18px;
+    }
+
+    .camera {
+      background:rgba(255,255,255,0.08);
+      border-radius:14px;
+      overflow:hidden;
+      transition:0.2s;
+      backdrop-filter:blur(8px);
+      position:relative;
+    }
+
+    .camera:hover {
+      transform:translateY(-3px);
+    }
+
+    .camera.down {
+      opacity:0.45;
+    }
+
+    .thumb {
+      height:160px;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+
+    img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .placeholder {
+      font-size:26px;
+      opacity:0.55;
+    }
+
+    .info {
+      padding:10px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:14px;
+    }
+
+    /* 🎬 Fullscreen Button */
+    .btn-fullscreen {
+      position:absolute;
+      bottom:8px;
+      right:8px;
+      background:rgba(0,0,0,0.6);
+      padding:4px 8px;
+      border-radius:6px;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    @media (max-width:768px) {
+      .sidebar {
+        position:fixed;
+        height:100vh;
+        left:-270px;
+        top:0;
+        z-index:999;
+      }
+      .sidebar.open { left:0; }
+      .toggle-sidebar {
+        display:block;
+        background:none;
+        border:none;
+        font-size:22px;
+        cursor:pointer;
+        color:#fff;
+      }
+      .layout { flex-direction:column; }
+      .main { padding:16px; }
+      .grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout">
+    <div class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="logo">📹</div>
+        <div>
+          <div class="brand-title">CCTV SMART VIEW</div>
+          <small>Control Panel</small>
+        </div>
+      </div>
+
+      <button data-floor="ALL" class="active">ALL FLOORS</button>
+      <button data-floor="2">FLOOR 2</button>
+      <button data-floor="3">FLOOR 3</button>
+      <button onclick="location.href='map.html'">🗺 MAP VIEW</button>
+      <button class="logout" onclick="location.href='index.html'">🚪 Logout</button>
+    </div>
+
+    <div class="main">
+      <button class="toggle-sidebar" style="display:none;" onclick="toggleSidebar()">☰</button>
+
+      <div class="topbar">
+        <div class="title-group">
+          <h1 id="floor-title">ALL FLOORS</h1>
+          <span id="camera-count">0 Cameras</span>
+        </div>
+        <div class="status-boxes">
+          <div class="box online">🟢 Online: <span id="online-count">0</span></div>
+          <div class="box offline">🔴 Offline: <span id="offline-count">0</span></div>
+        </div>
+      </div>
+
+      <div class="grid" id="camera-grid"></div>
+    </div>
+
+  </div>
+
+<script>
+  const cameras=[
+    { id:"2-1",floor:2,name:"Stock Area 1",online:true,stream:null,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"2-2",floor:2,name:"Stock Area 2",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"2-3",floor:2,name:"Stock Area 3",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"2-4",floor:2,name:"การเงิน",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"2-5",floor:2,name:"บริเวณทางเดินชั้น 2",online:true,stream:null,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"2-6",floor:2,name:"ห้อง CEO",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+
+    { id:"3-1",floor:3,name:"ทีม Marketing",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"3-2",floor:3,name:"ทีม Product Dealer",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"3-3",floor:3,name:"ทีม Project",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"3-4",floor:3,name:"ทีม Sale Dealer",online:true,stream:null,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"3-5",floor:3,name:"บริเวณพักทานอาหาร",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"3-6",floor:3,name:"หลังออฟฟิศชั้น 3",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+    { id:"3-7",floor:3,name:"ห้องประชุมชั้น 3",online:true,stream:true,image:"/icons/ภาพโจรปลอม.jpeg" },
+  ];
+
+  let selectedFloor="ALL";
+
+  function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+  }
+
+  function openFullscreen(elem){
+    if(elem.requestFullscreen) elem.requestFullscreen();
+    else if(elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+    else if(elem.msRequestFullscreen) elem.msRequestFullscreen();
+  }
+
+  function render(){
+    const grid=document.getElementById("camera-grid");
+    grid.innerHTML="";
+
+    const filtered = selectedFloor==="ALL" ? cameras : cameras.filter(c=>c.floor==selectedFloor);
+
+    document.getElementById("floor-title").textContent = selectedFloor==="ALL" ? "ALL FLOORS" : "FLOOR "+selectedFloor;
+    document.getElementById("camera-count").textContent = filtered.length+" Cameras";
+
+    const online = filtered.filter(c=>c.stream).length;
+    const offline = filtered.length-online;
+
+    document.getElementById("online-count").textContent = online;
+    document.getElementById("offline-count").textContent = offline;
+
+    filtered.forEach(cam=>{
+      const isOnline=cam.stream!==null;
+      const card=document.createElement("div");
+      card.className="camera"+(isOnline?"":" down");
+
+      const thumb=document.createElement("div");
+      thumb.className="thumb";
+
+      if(isOnline){
+        const img=document.createElement("img");
+        img.src=cam.image;
+        thumb.appendChild(img);
+
+        const btn=document.createElement("div");
+        btn.className="btn-fullscreen";
+        btn.textContent="⛶ Fullscreen";
+        btn.onclick=()=>openFullscreen(img);
+        thumb.appendChild(btn);
+
+      } else {
+        const span=document.createElement("span");
+        span.className="placeholder";
+        span.textContent="📷";
+        thumb.appendChild(span);
+      }
+
+      const info=document.createElement("div");
+      info.className="info";
+      info.innerHTML=`
+        <span>${cam.name}</span>
+        <small class="${isOnline?"online":"offline"}">● ${isOnline?"Online":"Offline"}</small>
+      `;
+
+      card.appendChild(thumb);
+      card.appendChild(info);
+      grid.appendChild(card);
+    });
+  }
+
+  document.querySelectorAll(".sidebar button[data-floor]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".sidebar button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedFloor=btn.dataset.floor;
+      render();
+    });
+  });
+
+  render();
+</script>
+
+</body>
+</html>
