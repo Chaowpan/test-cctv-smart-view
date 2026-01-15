@@ -1,280 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CCTV SMART VIEW</title>
+  <meta charset="UTF-8" />
+  <title>CCTV SMART VIEW - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-<style>
-* { box-sizing: border-box; font-family: Arial, sans-serif; }
-body { margin: 0; background: #f3f4f6; }
-.hidden { display: none !important; }
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
 
-/* Login */
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.login-box {
-  background: white;
-  padding: 32px;
-  width: 90%;
-  max-width: 320px;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.login-box h1 { text-align: center; margin-bottom: 20px; }
-.login-box input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-.login-box button {
-  width: 100%;
-  padding: 12px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Prompt', sans-serif;
+    }
 
-/* Header */
-header {
-  background: white;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.menu-btn {
-  font-size: 22px;
-  cursor: pointer;
-  display: none;
-}
+    body, html {
+      margin:0;
+      padding:0;
+      height:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 40%, #415a77 100%);
+    }
 
-/* Layout */
-.container {
-  display: flex;
-  height: calc(100vh - 56px);
-}
-aside {
-  width: 260px;
-  background: white;
-  padding: 16px;
-  border-right: 1px solid #ddd;
-  overflow-y: auto;
-}
-main {
-  flex: 1;
-  padding: 12px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-  overflow-y: auto;
-}
+    /* กล่อง Login */
+    .auth-box {
+      width: 92%;
+      max-width: 440px;
+      padding: 42px 36px;
+      border-radius: 18px;
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+      animation: fadeIn 0.6s ease;
+    }
 
-/* Buttons */
-.floor-btn {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  background: #e5e7eb;
-}
-.floor-btn.active { background: #2563eb; color: white; }
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateY(10px);}
+      to { opacity:1; transform: translateY(0);}
+    }
 
-/* Camera list */
-.camera-item {
-  background: #f9fafb;
-  padding: 8px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
+    .logo {
+      font-size: 28px;
+      font-weight:600;
+      text-align:center;
+      margin-bottom:10px;
+      letter-spacing:0.3px;
+    }
 
-/* Camera view */
-.camera-box {
-  background: black;
-  color: white;
-  border-radius: 16px;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 10px;
-  cursor: pointer;
-}
+    .subtitle {
+      text-align:center;
+      font-size:14px;
+      color:#d8e1ea;
+      margin-bottom:28px;
+    }
 
-/* Fullscreen */
-.fullscreen {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  color: white;
-  font-size: 22px;
-}
-.close-btn {
-  position: absolute;
-  top: 16px;
-  right: 20px;
-  font-size: 28px;
-  cursor: pointer;
-}
+    .input-group {
+      position:relative;
+      margin-bottom:22px;
+    }
 
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-  .menu-btn { display: block; }
-  aside {
-    position: fixed;
-    left: 0;
-    top: 56px;
-    bottom: 0;
-    z-index: 999;
-    transform: translateX(-100%);
-    transition: .3s;
-  }
-  aside.show { transform: translateX(0); }
-  .container { height: calc(100vh - 56px); }
-  main { grid-template-columns: 1fr; }
-}
-</style>
+    .input-group span {
+      position:absolute;
+      left:14px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:18px;
+      opacity:0.85;
+    }
+
+    input {
+      width:100%;
+      font-size:15px;
+      padding:15px 15px 15px 48px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.18);
+      color:#fff;
+      outline:none;
+      transition:0.25s;
+    }
+
+    input::placeholder {
+      color:#c7d0de;
+    }
+
+    input:focus {
+      border-color:#38bdf8;
+      background: rgba(255,255,255,0.22);
+    }
+
+    button {
+      width:100%;
+      padding:15px;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:600;
+      color:#fff;
+      cursor:pointer;
+      background:linear-gradient(135deg, #00b4ff, #0077ff);
+      transition:0.25s ease;
+    }
+
+    button:hover:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow:0 12px 26px rgba(0,123,255,0.35);
+    }
+
+    .footer {
+      text-align:center;
+      margin-top:22px;
+      font-size:14px;
+      color:#d5dde8;
+    }
+
+    .footer a {
+      color:#4cc9f0;
+      font-weight:600;
+      text-decoration:none;
+    }
+
+    /* Popup */
+    .popup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ef233c;
+      padding: 12px 20px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease forwards;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      z-index: 9999;
+    }
+
+    @keyframes slideIn {
+      from { opacity:0; transform:translateX(50px);}
+      to { opacity:1; transform:translateX(0);}
+    }
+
+    .popup-close {
+      cursor:pointer;
+      font-weight:bold;
+      font-size:16px;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 480px) {
+      .auth-box {
+        padding: 32px 24px;
+      }
+      .logo { font-size:22px; }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- Login -->
-<div id="loginPage" class="login-page">
-  <div class="login-box">
-    <h1>CCTV SMART VIEW</h1>
-    <input id="username" placeholder="Username" />
-    <input id="password" type="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
+  <div class="auth-box">
+    <div class="logo">📹 CCTV SMART VIEW</div>
+    <p class="subtitle">ระบบจัดการกล้องวงจรปิดสำหรับองค์กร</p>
+
+    <div class="input-group">
+      <span>👤</span>
+      <input id="username" placeholder="ชื่อผู้ใช้ (Username)">
+    </div>
+
+    <div class="input-group">
+      <span>🔒</span>
+      <input id="password" type="password" placeholder="รหัสผ่าน (Password)">
+    </div>
+
+    <button id="login-btn">เข้าสู่ระบบ</button>
+
+    <p class="footer">
+      ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิก</a>
+    </p>
   </div>
-</div>
-
-<!-- Dashboard -->
-<div id="dashboard" class="hidden">
-<header>
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
-  <h3>CCTV SMART VIEW</h3>
-  <div>
-    👤 <span id="userLabel"></span>
-    <button onclick="logout()">Logout</button>
-  </div>
-</header>
-
-<div class="container">
-  <aside id="sidebar">
-    <h3>Camera by Floor</h3>
-    <button class="floor-btn active" onclick="selectFloor('all', this)">ทุกชั้น</button>
-    <button class="floor-btn" onclick="selectFloor(1, this)">ชั้น 1</button>
-    <button class="floor-btn" onclick="selectFloor(2, this)">ชั้น 2</button>
-    <button class="floor-btn" onclick="selectFloor(3, this)">ชั้น 3</button>
-    <div id="cameraList"></div>
-  </aside>
-
-  <main id="cameraGrid"></main>
-</div>
-</div>
-
-<!-- Fullscreen -->
-<div id="fullscreen" class="fullscreen hidden">
-  <div class="close-btn" onclick="closeFullscreen()">✕</div>
-  <div id="fullscreenText"></div>
-</div>
 
 <script>
-const cameras = Array.from({ length: 18 }, (_, i) => ({
-  id: i + 1,
-  name: `Camera ${i + 1}`,
-  floor: Math.floor(i / 6) + 1,
-  status: i % 3 === 1 ? "offline" : "online",
-}));
+  document.getElementById("login-btn").addEventListener("click", login);
+  document.addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
 
-let selectedFloor = "all";
+  function login() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
 
-function login() {
-  const user = document.getElementById('username').value;
-  if (!user) return;
+    if (user === "admin" && pass === "cctv123") {
+      window.location.href = "dashboard.html";
+    } else {
+      showPopup("❌ Username หรือ Password ไม่ถูกต้อง");
+    }
+  }
 
-  document.getElementById('userLabel').innerText = user;
-  document.getElementById('loginPage').classList.add('hidden');
-  document.getElementById('dashboard').classList.remove('hidden');
+  function showPopup(message) {
+    const popup = document.createElement("div");
+    popup.className = "popup";
+    popup.innerHTML = `${message}<span class="popup-close">&times;</span>`;
+    
+    document.body.appendChild(popup);
+    const timeout = setTimeout(() => popup.remove(), 2500);
 
-  render();
-}
-
-function logout() {
-  document.getElementById('dashboard').classList.add('hidden');
-  document.getElementById('loginPage').classList.remove('hidden');
-}
-
-function toggleMenu() {
-  document.getElementById('sidebar').classList.toggle('show');
-}
-
-function selectFloor(floor, btn) {
-  selectedFloor = floor;
-  document.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('sidebar').classList.remove('show');
-  render();
-}
-
-function render() {
-  const cameraList = document.getElementById('cameraList');
-  const cameraGrid = document.getElementById('cameraGrid');
-
-  cameraList.innerHTML = '';
-  cameraGrid.innerHTML = '';
-
-  const filtered = selectedFloor === 'all'
-    ? cameras
-    : cameras.filter(c => c.floor === selectedFloor);
-
-  filtered.forEach(cam => {
-    cameraList.innerHTML += `
-      <div class="camera-item">
-        ${cam.name}
-        <span style="color:${cam.status==='online'?'green':'red'}">${cam.status}</span>
-      </div>`;
-
-    const box = document.createElement('div');
-    box.className = 'camera-box';
-    box.innerText = cam.status === 'online'
-      ? `Live Stream\n${cam.name}`
-      : `${cam.name}\nOffline`;
-    box.onclick = () => openFullscreen(cam);
-    cameraGrid.appendChild(box);
-  });
-}
-
-function openFullscreen(cam) {
-  document.getElementById('fullscreenText').innerText =
-    cam.status === 'online'
-    ? `Live Stream – ${cam.name}`
-    : `${cam.name} Offline`;
-  document.getElementById('fullscreen').classList.remove('hidden');
-}
-
-function closeFullscreen() {
-  document.getElementById('fullscreen').classList.add('hidden');
-}
+    popup.querySelector(".popup-close").addEventListener("click", () => {
+      clearTimeout(timeout);
+      popup.remove();
+    });
+  }
 </script>
 
 </body>
