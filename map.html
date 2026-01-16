@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCTV SMART VIEW - Map</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+  body, html {
+    margin:0; padding:0;
+    width:100%; height:100%;
+    font-family:"Prompt", sans-serif;
+    background:#0d1117;
+  }
+
+  #map {
+    width:100%;
+    height:100vh;
+  }
+
+  /* === TOP RIGHT CONTAINER === */
+  .top-controls {
+    position:absolute;
+    top:15px; right:15px;
+    z-index:9999;
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+
+  /* ปุ่ม Back */
+  .back-btn {
+    background:rgba(255,255,255,0.9);
+    backdrop-filter:blur(8px);
+    border:none;
+    padding:10px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:500;
+    color:#333;
+    box-shadow:0 4px 14px rgba(0,0,0,0.12);
+    transition:.2s;
+  }
+  .back-btn:hover {
+    background:#fff;
+    transform:translateY(-1px);
+  }
+
+  /* Status Box */
+  .status-box {
+    background:rgba(255,255,255,0.88);
+    backdrop-filter:blur(12px);
+    padding:10px 16px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:500;
+    box-shadow:0 4px 14px rgba(0,0,0,0.12);
+    min-width:150px;
+    text-align:right;
+  }
+  .status-box span {
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:3px;
+  }
+  .status-box .online-label{ color:#2ecc71; }
+  .status-box .offline-label{ color:#e74c3c; }
+
+  /* Popup Card */
+  .leaflet-popup-content-wrapper {
+    padding:0 !important;
+    border-radius:14px !important;
+    overflow:hidden !important;
+  }
+  .leaflet-popup-content {
+    margin:0 !important;
+  }
+  .cam-card {
+    width:240px;
+    background:#ffffff;
+    border-radius:14px;
+    overflow:hidden;
+    font-size:14px;
+  }
+  .cam-header {
+    padding:10px 14px;
+    background:#f7f9fc;
+    border-bottom:1px solid #e1e5ea;
+    font-weight:600;
+  }
+  .cam-status {
+    padding:8px 14px;
+    font-size:13px;
+  }
+  .cam-status.online { color:#2ecc71; }
+  .cam-status.offline { color:#e74c3c; }
+
+  .cam-img {
+    width:100%;
+    height:160px;
+    object-fit:cover;
+    cursor:pointer;
+    transition:0.2s;
+  }
+  .cam-img:hover {
+    transform:scale(1.02);
+  }
+
+  @media(max-width:768px){
+    .status-box { font-size:13px; padding:8px 12px; }
+    .back-btn { font-size:13px; padding:8px 12px; }
+    .cam-card { width:210px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP CONTROL BAR -->
+<div class="top-controls">
+  <button class="back-btn" onclick="location.href='dashboard.html'">← Back</button>
+  <div class="status-box" id="statusBox">⌛ Checking...</div>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  const cameras = [
+    { id:1, name:"Stock Area 1", pos:[13.81270,100.69040], online:true,  image:"/icons/thief.jpeg" },
+    { id:2, name:"Stock Area 2", pos:[13.81210,100.68590], online:true,  image:"/icons/thief.jpeg" },
+    { id:3, name:"Stock Area 3", pos:[13.81150,100.69200], online:true,  image:"/icons/thief.jpeg" },
+    { id:4, name:"การเงิน", pos:[13.81080,100.68480], online:true,  image:"/icons/thief.jpeg" },
+    { id:5, name:"บริเวณทางเดินชั้น 2", pos:[13.81020,100.69150], online:true,  image:"/icons/thief.jpeg" },
+    { id:6, name:"ห้อง CEO", pos:[13.80960,100.68530], online:true,  image:"/icons/thief.jpeg" },
+
+    { id:7, name:"Sand Box", pos:[13.80890,100.69080], online:false, image:"/icons/thief.jpeg" },
+    { id:8, name:"เอกสาร", pos:[13.80830,100.68640], online:false, image:"/icons/thief.jpeg" },
+    { id:9, name:"บัญชี", pos:[13.80770,100.68990], online:false, image:"/icons/thief.jpeg" },
+    { id:10, name:"Marketing", pos:[13.80710,100.68720], online:false, image:"/icons/thief.jpeg" },
+    { id:11, name:"Product Dealer", pos:[13.81190,100.68910], online:false, image:"/icons/thief.jpeg" },
+    { id:12, name:"Project", pos:[13.81130,100.68670], online:false, image:"/icons/thief.jpeg" },
+    { id:13, name:"Sale Dealer", pos:[13.80900,100.68830], online:false, image:"/icons/thief.jpeg" },
+    { id:14, name:"พักทานอาหาร", pos:[13.81240,100.68890], online:false, image:"/icons/thief.jpeg" }
+  ];
+
+  const map = L.map('map').setView([13.80981,100.68723], 17);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution:"© OpenStreetMap"
+  }).addTo(map);
+
+  const iconOnline = L.icon({ iconUrl:'icons/cctv.png', iconSize:[32,32], iconAnchor:[16,32] });
+  const iconOffline = L.icon({ iconUrl:'icons/cctv_offline.png', iconSize:[32,32], iconAnchor:[16,32] });
+
+  function openFullscreen(elem){
+    if(elem.requestFullscreen) elem.requestFullscreen();
+    else if(elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+    else if(elem.msRequestFullscreen) elem.msRequestFullscreen();
+  }
+
+  function renderMarkers(){
+    let online = cameras.filter(c=>c.online).length;
+    let offline = cameras.filter(c=>!c.online).length;
+
+    document.getElementById("statusBox").innerHTML = `
+      <span class="online-label">🟢 Online: ${online}</span>
+      <span class="offline-label">🔴 Offline: ${offline}</span>
+    `;
+
+    cameras.forEach(cam=>{
+      const marker = L.marker(cam.pos,{ icon: cam.online?iconOnline:iconOffline });
+
+      const popup = `
+        <div class="cam-card">
+          <div class="cam-header">${cam.name}</div>
+          <div class="cam-status ${cam.online?'online':'offline'}">
+            ${cam.online?'🟢 Online':'🔴 Offline'}
+          </div>
+          ${cam.online ? `<img src="${cam.image}" class="cam-img" onclick="openFullscreen(this)">` : ""}
+        </div>
+      `;
+
+      marker.bindPopup(popup);
+      marker.addTo(map);
+    });
+  }
+
+  renderMarkers();
+</script>
+
+</body>
+</html>
