@@ -207,8 +207,17 @@
   const iconOnline = L.icon({ iconUrl:"icons/cctv.png", iconSize:[32,32], iconAnchor:[16,32] });
   const iconOffline = L.icon({ iconUrl:"icons/cctv_offline.png", iconSize:[32,32], iconAnchor:[16,32] });
 
+  // ✔ รองรับ Fullscreen มือถือ iOS/Android/PC
   function openFullscreen(elem){
-    if(elem.requestFullscreen) elem.requestFullscreen();
+    if(elem.requestFullscreen){
+      elem.requestFullscreen();
+    } else if(elem.webkitRequestFullscreen){
+      elem.webkitRequestFullscreen();
+    } else if(elem.msRequestFullscreen){
+      elem.msRequestFullscreen();
+    } else {
+      console.warn("Fullscreen API not supported");
+    }
   }
 
   function renderMarkers(){
@@ -216,8 +225,8 @@
     let offline = cameras.filter(c=>!c.online).length;
 
     document.getElementById("statusBox").innerHTML = `
-      <span class="online-label">🟢 Online: ${online}</span>
-      <span class="offline-label">🔴 Offline: ${offline}</span>
+      <span class="status-chip online">🟢 ONLINE: ${online}</span>
+      <span class="status-chip offline">🔴 OFFLINE: ${offline}</span>
     `;
 
     cameras.forEach(cam=>{
@@ -240,6 +249,7 @@
 
   renderMarkers();
 </script>
+
 
 </body>
 </html>
