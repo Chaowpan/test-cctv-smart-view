@@ -20,7 +20,6 @@
       overflow:hidden;
     }
 
-    /* MAIN LAYOUT */
     .layout {
       display:flex;
       height:100vh;
@@ -31,8 +30,8 @@
     .sidebar {
       position:fixed;
       top:0; 
-      left:-260px; /* ซ่อนเริ่มต้น */
-      width:250px;
+      left:-260px;
+      width:260px;
       height:100vh;
       background:rgba(10,10,10,0.35);
       backdrop-filter:blur(14px);
@@ -54,6 +53,7 @@
       align-items:center;
       gap:10px;
       margin-bottom:24px;
+      margin-left:50px; /* ← เพิ่มป้องกันปุ่มทับ */
     }
 
     .logo-bubble {
@@ -84,6 +84,7 @@
       gap:8px;
       align-items:center;
       transition:0.2s ease;
+      margin-left:10px; /* ← ป้องกันปุ่มทับ */
     }
 
     .menu-btn:hover { background:rgba(255,255,255,0.12); }
@@ -92,14 +93,15 @@
       color:#fff;
       font-weight:600;
     }
+
     .menu-btn.logout {
       margin-top:auto;
       background:rgba(255,70,70,0.15);
       color:#ff7676;
     }
+
     .menu-btn.logout:hover { background:rgba(255,70,70,0.25); }
 
-    /* OVERLAY */
     .overlay {
       display:none;
       position:fixed;
@@ -108,11 +110,9 @@
       backdrop-filter:blur(2px);
       z-index:1000;
     }
-    .overlay.show {
-      display:block;
-    }
 
-    /* TOGGLE BUTTON */
+    .overlay.show { display:block; }
+
     .toggle-btn {
       position:fixed;
       top:18px;
@@ -129,20 +129,20 @@
       transition:0.2s;
       z-index:2000;
     }
+
     .toggle-btn:hover {
       background:rgba(255,255,255,0.2);
       transform:translateY(-2px);
     }
 
-    /* MAIN CONTENT */
     .main {
       flex:1;
       display:flex;
       flex-direction:column;
-      background:transparent;
       overflow:hidden;
       padding:18px;
-      margin-left:0; /* ไม่ให้ดัน main ให้เลื่อน */
+      margin-left:0;
+      padding-left:70px; /* ← ให้หัวข้อหลักเลี่ยงปุ่ม toggle */
     }
 
     .topbar {
@@ -169,7 +169,6 @@
       backdrop-filter:blur(8px);
     }
 
-    /* CAMERA GRID */
     .grid-wrap {
       flex:1;
       overflow-y:auto;
@@ -180,15 +179,8 @@
       display:grid;
       grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
       gap:18px;
-      animation:fadeIn 0.3s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity:0; transform:translateY(8px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    /* CAMERA CARD */
     .card {
       background:rgba(255,255,255,0.08);
       backdrop-filter:blur(12px);
@@ -196,9 +188,10 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
-      transition:0.25s ease;
+      transition:0.25s;
       box-shadow:0 4px 16px rgba(0,0,0,0.25);
     }
+
     .card:hover { transform:translateY(-3px); }
 
     .thumb {
@@ -217,7 +210,8 @@
 
     .thumb .thumb-badge {
       position:absolute;
-      bottom:8px; right:8px;
+      bottom:8px;
+      right:8px;
       background:rgba(0,0,0,0.6);
       padding:4px 8px;
       font-size:12px;
@@ -240,6 +234,7 @@
       border-radius:12px;
       font-weight:600;
     }
+
     .online  { background:rgba(46,204,113,0.25); color:#2ecc71; }
     .offline { background:rgba(231,76,60,0.25);  color:#e74c3c; }
 
@@ -312,8 +307,15 @@
     document.getElementById("overlay").classList.toggle("show");
   }
 
+  /* ✔ รองรับ Fullscreen มือถือ iOS/Android */
   function openFullscreen(elem){
-    if(elem.requestFullscreen) elem.requestFullscreen();
+    if(elem.requestFullscreen){
+      elem.requestFullscreen();
+    } else if(elem.webkitRequestFullscreen){ /* Safari / iOS */
+      elem.webkitRequestFullscreen();
+    } else if(elem.msRequestFullscreen){ /* IE */
+      elem.msRequestFullscreen();
+    }
   }
 
   function render(){
@@ -366,7 +368,6 @@
     });
   }
 
-  // Sidebar Button
   document.querySelectorAll(".menu-btn[data-floor]").forEach(btn=>{
     btn.addEventListener("click",()=>{
       document.querySelectorAll(".menu-btn[data-floor]").forEach(b=>b.classList.remove("active"));
