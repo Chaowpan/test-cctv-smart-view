@@ -5,293 +5,319 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CCTV SMART VIEW - Dashboard</title>
 
-  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Prompt', sans-serif;
-    }
+    * { box-sizing: border-box; font-family: 'Prompt', sans-serif; }
 
     body, html {
-      margin:0;
-      padding:0;
-      background: linear-gradient(135deg,#0d1b2a,#1b263b,#415a77);
+      margin:0; padding:0;
+      background:linear-gradient(135deg, #0d1b2a 0%, #1b263b 40%, #415a77 100%);
       color:#fff;
       height:100%;
-    }
-
-    .layout {
-      display:flex;
-      min-height:100vh;
       overflow:hidden;
     }
 
-    .sidebar {
-      width:260px;
-      background:rgba(0,0,0,0.45);
-      backdrop-filter:blur(12px);
-      border-right:1px solid rgba(255,255,255,0.08);
-      padding:24px 18px;
+    /* MAIN LAYOUT */
+    .layout {
       display:flex;
-      flex-direction:column;
-      transition:0.3s;
+      height:100vh;
+      overflow:hidden;
     }
 
-    .brand {
+    /* SIDEBAR */
+    .sidebar {
+      width:250px;
+      background:rgba(10,10,10,0.35);
+      backdrop-filter:blur(14px);
+      border-right:1px solid rgba(255,255,255,0.08);
+      padding:26px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      transition:0.3s;
+      z-index:1001;
+    }
+
+    .logo-area {
       display:flex;
       align-items:center;
       gap:10px;
-      margin-bottom:32px;
+      margin-bottom:24px;
     }
 
-    .brand .logo {
-      width:42px;
-      height:42px;
+    .logo-bubble {
+      width:40px; height:40px;
       border-radius:12px;
       background:linear-gradient(135deg,#00b4ff,#0077ff);
       display:flex;
       justify-content:center;
       align-items:center;
       font-size:20px;
-      box-shadow:0 8px 20px rgba(0,123,255,0.45);
+      box-shadow:0 6px 16px rgba(0,123,255,0.4);
     }
 
-    .brand-title { font-weight:bold; font-size:14px; }
-    small{font-size:12px;opacity:.7;}
+    .title {
+      font-size:14px; font-weight:600;
+    }
+    .subtitle { font-size:12px; opacity:0.75; }
 
-    .sidebar button {
+    .menu-btn {
       width:100%;
-      border:none;
-      padding:13px;
+      padding:12px 12px;
       background:rgba(255,255,255,0.06);
+      border:none;
+      border-radius:10px;
+      font-size:14px;
       color:#dbe4ed;
-      border-radius:12px;
-      margin-bottom:10px;
       text-align:left;
       cursor:pointer;
-      transition:0.25s;
-      font-size:14px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      transition:0.2s ease;
     }
 
-    .sidebar button:hover {
-      background:rgba(76,201,240,0.22);
-    }
-
-    .sidebar button.active {
-      background:rgba(76,201,240,0.32);
+    .menu-btn:hover { background:rgba(255,255,255,0.12); }
+    .menu-btn.active {
+      background:rgba(255,255,255,0.18);
       color:#fff;
       font-weight:600;
     }
-
-    .logout {
+    .menu-btn.logout {
       margin-top:auto;
-      background:rgba(255,107,107,0.18)!important;
-      color:#ff6b6b!important;
+      background:rgba(255,70,70,0.15);
+      color:#ff7676;
     }
+    .menu-btn.logout:hover { background:rgba(255,70,70,0.25); }
 
-    .logout:hover {
-      background:rgba(255,107,107,0.28)!important;
+    /* OVERLAY (for Mobile) */
+    .overlay {
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.5);
+      backdrop-filter:blur(2px);
+      z-index:1000;
     }
+    .overlay.show { display:block; }
 
+    /* MAIN CONTENT */
     .main {
       flex:1;
-      padding:26px;
-      overflow-y:auto;
+      display:flex;
+      flex-direction:column;
+      background:transparent;
+      overflow:hidden;
+      padding:18px;
     }
 
     .topbar {
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      margin-bottom:22px;
+      align-items:center;
       flex-wrap:wrap;
       gap:12px;
+      margin-bottom:14px;
     }
 
-    h1 {
-      margin:0;
-      font-size:22px;
+    .floor-title {
+      font-size:20px;
       font-weight:600;
     }
 
-    .title-group span {
-      font-size:12px;
-      opacity:0.85;
-    }
+    .info-small { font-size:13px; opacity:0.85; }
 
-    .status-boxes {
+    .stats {
       display:flex;
-      flex-wrap:wrap;
-      gap:8px;
+      gap:10px;
     }
 
-    .status-boxes .box {
-      background:rgba(255,255,255,0.12);
+    .stat-chip {
+      background:rgba(255,255,255,0.14);
       padding:6px 12px;
-      border-radius:10px;
+      border-radius:14px;
       font-size:13px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      backdrop-filter:blur(8px);
     }
 
-    .online {color:#2ecc71;}
-    .offline{color:#ff6b6b;}
+    /* CAMERA GRID AREA */
+    .grid-wrap {
+      flex:1;
+      overflow-y:auto;
+      padding-bottom:12px;
+    }
 
     .grid {
       display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+      grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
       gap:18px;
+      animation:fadeIn 0.3s ease;
     }
 
-    .camera {
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(8px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+
+    /* CAMERA CARD */
+    .card {
       background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(12px);
       border-radius:14px;
       overflow:hidden;
-      transition:0.2s;
-      backdrop-filter:blur(8px);
-      position:relative;
+      display:flex;
+      flex-direction:column;
+      transition:0.25s ease;
+      box-shadow:0 4px 16px rgba(0,0,0,0.25);
     }
 
-    .camera:hover {
-      transform:translateY(-3px);
-    }
-
-    .camera.down {
-      opacity:0.45;
-    }
+    .card:hover { transform:translateY(-3px); }
 
     .thumb {
       height:160px;
       background:#000;
-      display:flex;
-      align-items:center;
-      justify-content:center;
       position:relative;
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
 
-    img {
+    .thumb img {
       width:100%;
       height:100%;
       object-fit:cover;
     }
 
-    .placeholder {
-      font-size:26px;
-      opacity:0.55;
+    .thumb .thumb-badge {
+      position:absolute;
+      bottom:8px; right:8px;
+      background:rgba(0,0,0,0.6);
+      padding:4px 8px;
+      font-size:12px;
+      border-radius:6px;
+      cursor:pointer;
     }
 
-    .info {
+    .card-body {
       padding:10px 14px;
       display:flex;
       justify-content:space-between;
       align-items:center;
+    }
+
+    .cam-name {
       font-size:14px;
+      font-weight:500;
     }
 
-    /* 🎬 Fullscreen Button */
-    .btn-fullscreen {
-      position:absolute;
-      bottom:8px;
-      right:8px;
-      background:rgba(0,0,0,0.6);
-      padding:4px 8px;
-      border-radius:6px;
+    .chip {
+      padding:3px 8px;
       font-size:12px;
-      cursor:pointer;
-      user-select:none;
+      border-radius:12px;
+      font-weight:600;
     }
 
-    @media (max-width:768px) {
+    .online { background:rgba(46,204,113,0.25); color:#2ecc71; }
+    .offline { background:rgba(231,76,60,0.25); color:#e74c3c; }
+
+    /* MOBILE MODE */
+    @media(max-width:768px) {
       .sidebar {
         position:fixed;
+        top:0; left:-260px;
         height:100vh;
-        left:-270px;
-        top:0;
-        z-index:999;
+        transition:0.3s ease;
       }
       .sidebar.open { left:0; }
-      .toggle-sidebar {
-        display:block;
+      .toggle-btn {
+        display:flex;
+        font-size:22px;
         background:none;
         border:none;
-        font-size:22px;
-        cursor:pointer;
         color:#fff;
+        margin-bottom:6px;
+        cursor:pointer;
       }
-      .layout { flex-direction:column; }
-      .main { padding:16px; }
       .grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
     }
+    .toggle-btn { display:none; }
+
   </style>
 </head>
 <body>
 
-  <div class="layout">
-    <div class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="logo">📹</div>
-        <div>
-          <div class="brand-title">CCTV SMART VIEW</div>
-          <small>Control Panel</small>
-        </div>
-      </div>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-      <button data-floor="ALL" class="active">ALL FLOORS</button>
-      <button data-floor="2">FLOOR 2</button>
-      <button data-floor="3">FLOOR 3</button>
-      <button onclick="location.href='map.html'">🗺 MAP VIEW</button>
-      <button class="logout" onclick="location.href='index.html'">🚪 Logout</button>
+<div class="layout">
+  <div class="sidebar" id="sidebar">
+    <div class="logo-area">
+      <div class="logo-bubble">📹</div>
+      <div>
+        <div class="title">CCTV SMART VIEW</div>
+        <div class="subtitle">Control Panel</div>
+      </div>
     </div>
 
-    <div class="main">
-      <button class="toggle-sidebar" style="display:none;" onclick="toggleSidebar()">☰</button>
+    <button class="menu-btn active" data-floor="ALL">📋 ALL FLOORS</button>
+    <button class="menu-btn" data-floor="2">🏢 FLOOR 2</button>
+    <button class="menu-btn" data-floor="3">🏬 FLOOR 3</button>
+    <button class="menu-btn" onclick="location.href='map.html'">🗺 MAP VIEW</button>
+    <button class="menu-btn logout" onclick="location.href='index.html'">🚪 Logout</button>
+  </div>
 
-      <div class="topbar">
-        <div class="title-group">
-          <h1 id="floor-title">ALL FLOORS</h1>
-          <span id="camera-count">0 Cameras</span>
-        </div>
-        <div class="status-boxes">
-          <div class="box online">🟢 Online: <span id="online-count">0</span></div>
-          <div class="box offline">🔴 Offline: <span id="offline-count">0</span></div>
-        </div>
+  <div class="main">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+    <div class="topbar">
+      <div>
+        <div class="floor-title" id="floor-title">ALL FLOORS</div>
+        <div class="info-small" id="camera-count">0 Cameras</div>
       </div>
+      <div class="stats">
+        <div class="stat-chip">🟢 Online: <span id="online-count">0</span></div>
+        <div class="stat-chip">🔴 Offline: <span id="offline-count">0</span></div>
+      </div>
+    </div>
 
+    <div class="grid-wrap">
       <div class="grid" id="camera-grid"></div>
     </div>
 
   </div>
+</div>
 
 <script>
-  const cameras=[
-    { id:"2-1",floor:2,name:"Stock Area 1",online:true,stream:null,image:"./icons/thief.jpeg" },
-    { id:"2-2",floor:2,name:"Stock Area 2",online:true,stream:true,image:"./icons/thief.jpeg" },
-    { id:"2-3",floor:2,name:"Stock Area 3",online:true,stream:true,image:"./icons/thief.jpeg" },
-    { id:"2-4",floor:2,name:"การเงิน",online:true,stream:true,image:"./icons/thief.jpeg" },
-    { id:"2-5",floor:2,name:"บริเวณทางเดินชั้น 2",online:true,stream:null,image:"./icons/thief.jpeg" },
-    { id:"2-6",floor:2,name:"ห้อง CEO",online:true,stream:true,image:"./icons/thief.jpeg" },
-
-    { id:"3-1",floor:3,name:"ทีม Marketing",online:true,stream:true,image:"./icons/thief.jpeg" },
-    { id:"3-2",floor:3,name:"ทีม Product Dealer",online:true,stream:true,image:"./icons/thief.jpeg" },
-    { id:"3-3",floor:3,name:"ทีม Project",online:true,stream:true,image:"./icons/thief.jpeg" },
-    { id:"3-4",floor:3,name:"ทีม Sale Dealer",online:true,stream:null,image:"./icons/thief.jpeg" },
-    { id:"3-5",floor:3,name:"บริเวณพักทานอาหาร",online:true,stream:true,image:"./icons/thief.jpeg" },
-    { id:"3-6",floor:3,name:"หลังออฟฟิศชั้น 3",online:true,stream:true,image:"./icons/thief.jpeg" },
-    { id:"3-7",floor:3,name:"ห้องประชุมชั้น 3",online:true,stream:true,image:"./icons/thief.jpeg" },
+  const cameras = [
+    { id:"2-1",floor:2,name:"Stock Area 1",stream:null,image:"icons/thief.jpeg" },
+    { id:"2-2",floor:2,name:"Stock Area 2",stream:true,image:"icons/thief.jpeg" },
+    { id:"2-3",floor:2,name:"Stock Area 3",stream:true,image:"icons/thief.jpeg" },
+    { id:"2-4",floor:2,name:"Finance",stream:true,image:"icons/thief.jpeg" },
+    { id:"2-5",floor:2,name:"Walkway",stream:null,image:"icons/thief.jpeg" },
+    { id:"2-6",floor:2,name:"CEO Room",stream:true,image:"icons/thief.jpeg" },
+    { id:"3-1",floor:3,name:"Marketing",stream:true,image:"icons/thief.jpeg" },
+    { id:"3-2",floor:3,name:"Product Dealer",stream:true,image:"icons/thief.jpeg" },
+    { id:"3-3",floor:3,name:"Project Team",stream:true,image:"icons/thief.jpeg" },
+    { id:"3-4",floor:3,name:"Sale Dealer",stream:null,image:"icons/thief.jpeg" },
+    { id:"3-5",floor:3,name:"Cafeteria",stream:true,image:"icons/thief.jpeg" },
+    { id:"3-6",floor:3,name:"Back Office",stream:true,image:"icons/thief.jpeg" },
+    { id:"3-7",floor:3,name:"Meeting Room",stream:true,image:"icons/thief.jpeg" },
   ];
 
-  let selectedFloor="ALL";
+  let selectedFloor = "ALL";
 
   function toggleSidebar(){
     document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
   }
 
   function openFullscreen(elem){
     if(elem.requestFullscreen) elem.requestFullscreen();
-    else if(elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-    else if(elem.msRequestFullscreen) elem.msRequestFullscreen();
   }
 
   function render(){
@@ -300,59 +326,56 @@
 
     const filtered = selectedFloor==="ALL" ? cameras : cameras.filter(c=>c.floor==selectedFloor);
 
-    document.getElementById("floor-title").textContent = selectedFloor==="ALL" ? "ALL FLOORS" : "FLOOR "+selectedFloor;
+    document.getElementById("floor-title").textContent = selectedFloor==="ALL"?"ALL FLOORS":"FLOOR "+selectedFloor;
     document.getElementById("camera-count").textContent = filtered.length+" Cameras";
 
     const online = filtered.filter(c=>c.stream).length;
-    const offline = filtered.length-online;
+    const offline = filtered.length - online;
 
     document.getElementById("online-count").textContent = online;
     document.getElementById("offline-count").textContent = offline;
 
     filtered.forEach(cam=>{
-      const isOnline=cam.stream!==null;
       const card=document.createElement("div");
-      card.className="camera"+(isOnline?"":" down");
+      card.className="card";
 
       const thumb=document.createElement("div");
       thumb.className="thumb";
 
-      if(isOnline){
+      if(cam.stream){
         const img=document.createElement("img");
         img.src=cam.image;
         thumb.appendChild(img);
 
         const btn=document.createElement("div");
-        btn.className="btn-fullscreen";
+        btn.className="thumb-badge";
         btn.textContent="⛶ Fullscreen";
         btn.onclick=()=>openFullscreen(img);
         thumb.appendChild(btn);
-
       } else {
-        const span=document.createElement("span");
-        span.className="placeholder";
-        span.textContent="📷";
-        thumb.appendChild(span);
+        thumb.innerHTML=`<span style="font-size:28px;opacity:.5;">📷</span>`;
       }
 
-      const info=document.createElement("div");
-      info.className="info";
-      info.innerHTML=`
-        <span>${cam.name}</span>
-        <small class="${isOnline?"online":"offline"}">● ${isOnline?"Online":"Offline"}</small>
+      const body=document.createElement("div");
+      body.className="card-body";
+
+      body.innerHTML=`
+        <span class="cam-name">${cam.name}</span>
+        <span class="chip ${cam.stream?'online':'offline'}">${cam.stream?'Online':'Offline'}</span>
       `;
 
       card.appendChild(thumb);
-      card.appendChild(info);
+      card.appendChild(body);
       grid.appendChild(card);
     });
   }
 
-  document.querySelectorAll(".sidebar button[data-floor]").forEach(btn=>{
+  // Sidebar Button Events
+  document.querySelectorAll(".menu-btn[data-floor]").forEach(btn=>{
     btn.addEventListener("click",()=>{
-      document.querySelectorAll(".sidebar button").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".menu-btn[data-floor]").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
-      selectedFloor=btn.dataset.floor;
+      selectedFloor = btn.dataset.floor;
       render();
     });
   });
@@ -362,5 +385,3 @@
 
 </body>
 </html>
-
-
