@@ -29,7 +29,11 @@
 
     /* SIDEBAR */
     .sidebar {
+      position:fixed;
+      top:0; 
+      left:-260px; /* ซ่อนเริ่มต้น */
       width:250px;
+      height:100vh;
       background:rgba(10,10,10,0.35);
       backdrop-filter:blur(14px);
       border-right:1px solid rgba(255,255,255,0.08);
@@ -37,8 +41,12 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      transition:0.3s;
+      transition:0.3s ease;
       z-index:1001;
+    }
+
+    .sidebar.open {
+      left:0;
     }
 
     .logo-area {
@@ -59,9 +67,7 @@
       box-shadow:0 6px 16px rgba(0,123,255,0.4);
     }
 
-    .title {
-      font-size:14px; font-weight:600;
-    }
+    .title { font-size:14px; font-weight:600; }
     .subtitle { font-size:12px; opacity:0.75; }
 
     .menu-btn {
@@ -93,7 +99,7 @@
     }
     .menu-btn.logout:hover { background:rgba(255,70,70,0.25); }
 
-    /* OVERLAY (for Mobile) */
+    /* OVERLAY */
     .overlay {
       display:none;
       position:fixed;
@@ -102,7 +108,31 @@
       backdrop-filter:blur(2px);
       z-index:1000;
     }
-    .overlay.show { display:block; }
+    .overlay.show {
+      display:block;
+    }
+
+    /* TOGGLE BUTTON */
+    .toggle-btn {
+      position:fixed;
+      top:18px;
+      left:18px;
+      font-size:22px;
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.25);
+      padding:6px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      align-items:center;
+      backdrop-filter:blur(8px);
+      transition:0.2s;
+      z-index:2000;
+    }
+    .toggle-btn:hover {
+      background:rgba(255,255,255,0.2);
+      transform:translateY(-2px);
+    }
 
     /* MAIN CONTENT */
     .main {
@@ -112,6 +142,7 @@
       background:transparent;
       overflow:hidden;
       padding:18px;
+      margin-left:0; /* ไม่ให้ดัน main ให้เลื่อน */
     }
 
     .topbar {
@@ -123,18 +154,10 @@
       margin-bottom:14px;
     }
 
-    .floor-title {
-      font-size:20px;
-      font-weight:600;
-    }
-
+    .floor-title { font-size:20px; font-weight:600; }
     .info-small { font-size:13px; opacity:0.85; }
 
-    .stats {
-      display:flex;
-      gap:10px;
-    }
-
+    .stats { display:flex; gap:10px; }
     .stat-chip {
       background:rgba(255,255,255,0.14);
       padding:6px 12px;
@@ -146,7 +169,7 @@
       backdrop-filter:blur(8px);
     }
 
-    /* CAMERA GRID AREA */
+    /* CAMERA GRID */
     .grid-wrap {
       flex:1;
       overflow-y:auto;
@@ -162,7 +185,7 @@
 
     @keyframes fadeIn {
       from { opacity:0; transform:translateY(8px); }
-      to { opacity:1; transform:translateY(0); }
+      to   { opacity:1; transform:translateY(0); }
     }
 
     /* CAMERA CARD */
@@ -176,7 +199,6 @@
       transition:0.25s ease;
       box-shadow:0 4px 16px rgba(0,0,0,0.25);
     }
-
     .card:hover { transform:translateY(-3px); }
 
     .thumb {
@@ -189,8 +211,7 @@
     }
 
     .thumb img {
-      width:100%;
-      height:100%;
+      width:100%; height:100%;
       object-fit:cover;
     }
 
@@ -211,10 +232,7 @@
       align-items:center;
     }
 
-    .cam-name {
-      font-size:14px;
-      font-weight:500;
-    }
+    .cam-name { font-size:14px; font-weight:500; }
 
     .chip {
       padding:3px 8px;
@@ -222,36 +240,17 @@
       border-radius:12px;
       font-weight:600;
     }
+    .online  { background:rgba(46,204,113,0.25); color:#2ecc71; }
+    .offline { background:rgba(231,76,60,0.25);  color:#e74c3c; }
 
-    .online { background:rgba(46,204,113,0.25); color:#2ecc71; }
-    .offline { background:rgba(231,76,60,0.25); color:#e74c3c; }
-
-    /* MOBILE MODE */
-    @media(max-width:768px) {
-      .sidebar {
-        position:fixed;
-        top:0; left:-260px;
-        height:100vh;
-        transition:0.3s ease;
-      }
-      .sidebar.open { left:0; }
-      .toggle-btn {
-        display:flex;
-        font-size:22px;
-        background:none;
-        border:none;
-        color:#fff;
-        margin-bottom:6px;
-        cursor:pointer;
-      }
+    @media(max-width:768px){
       .grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
     }
-    .toggle-btn { display:none; }
-
   </style>
 </head>
 <body>
 
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
 <div class="layout">
@@ -272,8 +271,6 @@
   </div>
 
   <div class="main">
-    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-
     <div class="topbar">
       <div>
         <div class="floor-title" id="floor-title">ALL FLOORS</div>
@@ -288,7 +285,6 @@
     <div class="grid-wrap">
       <div class="grid" id="camera-grid"></div>
     </div>
-
   </div>
 </div>
 
@@ -370,7 +366,7 @@
     });
   }
 
-  // Sidebar Button Events
+  // Sidebar Button
   document.querySelectorAll(".menu-btn[data-floor]").forEach(btn=>{
     btn.addEventListener("click",()=>{
       document.querySelectorAll(".menu-btn[data-floor]").forEach(b=>b.classList.remove("active"));
